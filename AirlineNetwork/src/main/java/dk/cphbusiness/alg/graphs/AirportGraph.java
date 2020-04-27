@@ -91,7 +91,7 @@ public class AirportGraph {
             
             String line = reader.readLine();
             int count = 0;
-            while (line != null && count < 20) {
+            while (line != null) {
                     String[] arr = line.split(";");
                     
                     String airline = arr[0];
@@ -103,15 +103,20 @@ public class AirportGraph {
                     g.addEdge(airline, source, destination, distance, time);
                     
                     line = reader.readLine();
-                    count++;
             }
             reader.close();
         } catch (IOException e) {
                 e.printStackTrace();
         }
-        System.out.println(g);
         
-        BSSearch bsseach = new BSSearch(g);
-        bsseach.searchFrom("KZN");
+        // Breadth First
+//        BFSearch bssearch = new BFSearch(g);
+//        bssearch.searchFrom("DME");
+//        bssearch.print(System.out);
+        
+//      Depth First
+        DFSearch dfserach = new DFSearch(g);
+        dfserach.searchFrom("KZN");
+        dfserach.print(System.out);
     }
 }

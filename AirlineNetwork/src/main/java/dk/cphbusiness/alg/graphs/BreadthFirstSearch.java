@@ -63,7 +63,7 @@ public class BreadthFirstSearch {
     }
 
   public static void main(String[] args) {
-    Graph g = new MatrixGraph(6);
+    Graph g = new MatrixGraph(9);
     g.addUndirectedEdge(0, 5);
     g.addUndirectedEdge(0, 1);
     g.addUndirectedEdge(0, 2);
@@ -71,9 +71,11 @@ public class BreadthFirstSearch {
     g.addUndirectedEdge(2, 4);
     g.addUndirectedEdge(3, 4);
     g.addUndirectedEdge(5, 3);
+    g.addUndirectedEdge(7, 3);
+    g.addUndirectedEdge(6, 3);
 
     DepthFirstSearch bfs = new DepthFirstSearch(g);
-    bfs.searchFrom(0);
+    bfs.searchFrom(2);
     bfs.print(System.out);
     }
 

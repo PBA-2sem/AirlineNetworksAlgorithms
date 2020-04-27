@@ -19,8 +19,11 @@ public class ArrayQueue<T> implements Queue<T> {
   @Override
   public void enqueue(T item) {
     items[end++] = item;
+    if (end >= items.length)
+      System.out.println("Queue is full....");
     end = end%items.length;
-    }
+  }
+  
 
   @Override
   public T dequeue() {
