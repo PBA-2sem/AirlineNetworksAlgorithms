@@ -10,8 +10,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class AirportGraph {
 
@@ -60,6 +62,24 @@ public class AirportGraph {
         E++;
     }
 
+    public void addEdgeWithSameAirline(String airline, String source, String destination, Float distance, Float time) {
+        EdgeNode node = null;
+        if (vertices.get(source) == null) {
+            node = new EdgeNode(destination, airline, distance, time, vertices.get(source));
+        } else {
+
+            if (vertices.get(source).airline == airline) {
+                node = vertices.get(source);
+            } else {
+//                System.out.println("Not same airline : " + airline);
+                return;
+            }
+        }
+
+        vertices.put(source, node);
+        E++;
+    }
+
     public Iterable<String> adjacents(String source) {
         List<String> adjacents = new ArrayList<>();
         EdgeNode node = vertices.get(source);
@@ -74,6 +94,9 @@ public class AirportGraph {
     public String toString() {
         String text = "";
         for (Map.Entry<String, EdgeNode> entry : vertices.entrySet()) {
+            if (text.length() == 0) {
+                text += "Airline : " + entry.getValue().airline + " - ";
+            }
             text += "" + entry.getKey() + ": " + adjacents(entry.getKey()) + "\n";
         }
         return text;
@@ -83,10 +106,11 @@ public class AirportGraph {
 
         AirportGraph g = new AirportGraph();
 
+        Set<String> sourceAirportCodes = new HashSet<>();
         BufferedReader reader;
         try {
             reader = new BufferedReader(new FileReader(
-                    "./src/resources/routes.txt"));
+                    "./src/main/resources/routes.txt"));
             String headers = reader.readLine();
 
             String line = reader.readLine();
@@ -100,8 +124,12 @@ public class AirportGraph {
                 Float distance = Float.parseFloat(arr[3]);
                 Float time = Float.parseFloat(arr[4]);
 
-                g.addEdge(airline, source, destination, distance, time);
+                // EDGE WITH RANDOM CONNECTIONS
+//                g.addEdge(airline, source, destination, distance, time);
+                // EDGE WITH SAME AIRLINE
+                g.addEdgeWithSameAirline(airline, source, destination, distance, time);
 
+                sourceAirportCodes.add(source);
                 line = reader.readLine();
             }
             reader.close();
@@ -109,16 +137,30 @@ public class AirportGraph {
             e.printStackTrace();
         }
 
-        // Breadth First
-        BFSearch bssearch = new BFSearch(g);
-//        bssearch.searchFrom("DME");
-//        bssearch.print(System.out);
+        // https://www3.cs.stonybrook.edu/~skiena/combinatorica/animations/search.html
+        // Breadth First ####
+//        BFSearch bfsearch = new BFSearch(g);
+////        Run for all 
+//        bfsearch.searchFrom("BAY");
+//        bfsearch.print(System.out);
+//
+////        RUN FOR ONLY SAME AIRLINE
+////        for (String s : sourceAirportCodes) {
+////            BFSearch bfsearch = new BFSearch(g);
+////            bfsearch.searchFrom(s);
+////            bfsearch.print(System.out);
+////        }
+////      Depth First ####
+//        DFSearch dfsearch = new DFSearch(g);
+//        //Run for all 
+//        dfsearch.searchFrom("BAY");
+//        dfsearch.print(System.out);
         
-        bssearch.searchFrom("DME");
-        bssearch.printWithAirline(System.out, "2B");
-////      Depth First
-//        DFSearch dfserach = new DFSearch(g);
-//        dfserach.searchFrom("KZN");
-//        dfserach.print(System.out);
+        // RUN FOR ONLY SAME AIRLINE
+        for (String s : sourceAirportCodes) {
+            DFSearch dfsearch = new DFSearch(g);
+            dfsearch.searchFrom(s);
+            dfsearch.print(System.out);
+        }
     }
 }

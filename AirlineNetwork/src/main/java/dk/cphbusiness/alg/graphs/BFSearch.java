@@ -63,7 +63,7 @@ public class BFSearch {
             String key = entry.getKey();
             String keyPath = showPathTo(entry.getKey());
             if (!key.equals(keyPath)) {
-                out.println("" + key + ": " + keyPath);
+                out.println("Airline : " + entry.getValue().airline + " - " + key + ": " + keyPath);
                 count++;
             }
         }
@@ -71,16 +71,22 @@ public class BFSearch {
     }
 
     public void printWithAirline(PrintStream out, String airline) {
+        int count = 0;
         for (Map.Entry<String, AirportGraph.EdgeNode> entry : graph.getVertices().entrySet()) {
             String key = entry.getKey();
+            
             if (entry.getValue().airline.equals(airline)) {
+                
                 String keyPath = showPathTo(entry.getKey());
                 if (!key.equals(keyPath)) {
                     out.println("" + key + ": " + keyPath);
                 }
-
+                
             }
+            count++;
+            
         }
+        System.out.println(count);
     }
 
 //  public static void main(String[] args) {
