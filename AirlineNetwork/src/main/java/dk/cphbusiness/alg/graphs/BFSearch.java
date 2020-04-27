@@ -14,70 +14,74 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class BFSearch {
-  private final AirportGraph graph;
-  private Map<String, String> visitedFrom;
-  private Queue<Edge> edges;
 
-  public BFSearch(AirportGraph graph) {
-    ArrayList<String> keys = new ArrayList<String>(graph.getVertices().keySet());
-    this.graph = graph;
-    visitedFrom = new HashMap<>();
-    for (int v = 0; v < keys.size(); v++) visitedFrom.put(keys.get(v), "");
-    edges = new ArrayQueue<>(2_000);
-  }
+    private final AirportGraph graph;
+    private Map<String, String> visitedFrom;
+    private Queue<Edge> edges;
 
-  private class Edge {
-    String from;
-    String to;
-
-    Edge(String from, String to) {
-      this.from = from;
-      this.to = to;
-      }
-
-    @Override
-    public String toString() {
-      return ""+from+" -> "+to;
-      }
+    public BFSearch(AirportGraph graph) {
+        ArrayList<String> keys = new ArrayList<String>(graph.getVertices().keySet());
+        this.graph = graph;
+        visitedFrom = new HashMap<>();
+        for (int v = 0; v < keys.size(); v++) {
+            visitedFrom.put(keys.get(v), "");
+        }
+        edges = new ArrayQueue<>(5_000);
     }
 
-  private void register(Edge edge) {
-    if (visitedFrom.get(edge.to) == null || !visitedFrom.get(edge.to).equals("")) return;
-    // only register if 'to' has not been registered already
-    edges.enqueue(edge);
-    visitedFrom.put(edge.to, edge.from);
-  }
-
-  public void searchFrom(String v) {
-    register(new Edge(v, v));
-    while (!edges.isEmpty()) {
-      Edge step = edges.dequeue();
-      for (String w : graph.adjacents(step.to)) 
-          register(new Edge(step.to, w));
-      }
+    private void register(Edge edge) {
+        if (visitedFrom.get(edge.to) == null || !visitedFrom.get(edge.to).equals("")) {
+            return;
+        }
+        // only register if 'to' has not been registered already
+        edges.enqueue(edge);
+        visitedFrom.put(edge.to, edge.from);
     }
 
-  public String showPathTo(String w) {
-    String path = w;
-    while (!visitedFrom.get(w).equals(w) && !visitedFrom.get(w).equals("")) {
-      w = visitedFrom.get(w);
-      path = ""+w+" -> "+path;
-    }
-    return path;
-    }
-
-  public void print(PrintStream out) {
-    int count = 0;
-    for (Map.Entry<String,AirportGraph.EdgeNode> entry : graph.getVertices().entrySet()) {
-        String key = entry.getKey();
-        String keyPath = showPathTo(entry.getKey());
-        if (!key.equals(keyPath)) {
-            out.println("" + key + ": " + keyPath);
-            count++;
+    public void searchFrom(String v) {
+        register(new Edge(v, v));
+        while (!edges.isEmpty()) {
+            Edge step = edges.dequeue();
+            for (String w : graph.adjacents(step.to)) {
+                register(new Edge(step.to, w));
+            }
         }
     }
-      System.out.println(count);
-  }
+
+    public String showPathTo(String w) {
+        String path = w;
+        while (!visitedFrom.get(w).equals(w) && !visitedFrom.get(w).equals("")) {
+            w = visitedFrom.get(w);
+            path = "" + w + " -> " + path;
+        }
+        return path;
+    }
+
+    public void print(PrintStream out) {
+        int count = 0;
+        for (Map.Entry<String, AirportGraph.EdgeNode> entry : graph.getVertices().entrySet()) {
+            String key = entry.getKey();
+            String keyPath = showPathTo(entry.getKey());
+            if (!key.equals(keyPath)) {
+                out.println("" + key + ": " + keyPath);
+                count++;
+            }
+        }
+        System.out.println(count);
+    }
+
+    public void printWithAirline(PrintStream out, String airline) {
+        for (Map.Entry<String, AirportGraph.EdgeNode> entry : graph.getVertices().entrySet()) {
+            String key = entry.getKey();
+            if (entry.getValue().airline.equals(airline)) {
+                String keyPath = showPathTo(entry.getKey());
+                if (!key.equals(keyPath)) {
+                    out.println("" + key + ": " + keyPath);
+                }
+
+            }
+        }
+    }
 
 //  public static void main(String[] args) {
 //    Graph g = new MatrixGraph(6);
@@ -93,5 +97,4 @@ public class BFSearch {
 //    bfs.searchFrom(0);
 //    bfs.print(System.out);
 //    }
-
-  }
+}
