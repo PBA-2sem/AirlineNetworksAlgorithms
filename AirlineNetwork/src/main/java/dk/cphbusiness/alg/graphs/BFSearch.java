@@ -12,19 +12,31 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import javafx.util.Pair;
 
 public class BFSearch {
 
     private final AirportGraph graph;
     private Map<String, String> visitedFrom;
+    private Map<String, Pair<String, String>> visitedFromWithAirline;
     private Queue<Edge> edges;
 
     public BFSearch(AirportGraph graph) {
-        ArrayList<String> keys = new ArrayList<String>(graph.getVertices().keySet());
+        ArrayList<String> keys = new ArrayList<>(graph.getVertices().keySet());
         this.graph = graph;
         visitedFrom = new HashMap<>();
         for (int v = 0; v < keys.size(); v++) {
             visitedFrom.put(keys.get(v), "");
+        }
+        edges = new ArrayQueue<>(5_000);
+    }
+    
+    public BFSearch(AirportGraph graph, String jeff) {
+        ArrayList<String> keys = new ArrayList<>(graph.getVertices().keySet());
+        this.graph = graph;
+        visitedFromWithAirline = new HashMap<>();
+        for (int v = 0; v < keys.size(); v++) {
+            visitedFromWithAirline.put(keys.get(v), null);
         }
         edges = new ArrayQueue<>(5_000);
     }
@@ -37,6 +49,15 @@ public class BFSearch {
         edges.enqueue(edge);
         visitedFrom.put(edge.to, edge.from);
     }
+    
+    private void registerWithSameAirline(Edge edge) {
+        if (visitedFromWithAirline.get(edge.to) != null) {
+            return;
+        }
+        // only register if 'to' has not been registered already
+        edges.enqueue(edge);
+        visitedFromWithAirline.put(edge.to, new Pair(edge.from, edge.airline));
+    }
 
     public void searchFrom(String v) {
         register(new Edge(v, v));
@@ -47,7 +68,31 @@ public class BFSearch {
             }
         }
     }
+    
+    public void searchFromSameAirline(String v) {
+        registerWithSameAirline(new Edge(v, v, ""));
+        while (!edges.isEmpty()) {
+            Edge step = edges.dequeue();
+            for (AirportGraph.EdgeNode node : graph.adjacentsWithEdgeNode(step.to)) {
+                    registerWithSameAirline(new Edge(step.to, node.destination, node.airline));
+            }
+        }
+    }
 
+    public String showPathToWithSameAirline(String w, String airline) {
+        String path = w + " ||| Airline company: " + airline;
+        while (visitedFromWithAirline.get(w) != null
+                && !visitedFromWithAirline.get(w).getKey().equals(w) 
+                && !visitedFromWithAirline.get(w).getKey().equals("")
+                && visitedFromWithAirline.get(w).getValue().equals(airline)) {
+            
+            String currAirline = visitedFromWithAirline.get(w).getValue();
+            w = visitedFromWithAirline.get(w).getKey();
+            path = "" + w + " (" + currAirline + ") -> " + path;
+        }
+        return path;
+    }
+    
     public String showPathTo(String w) {
         String path = w;
         while (!visitedFrom.get(w).equals(w) && !visitedFrom.get(w).equals("")) {
@@ -70,24 +115,19 @@ public class BFSearch {
         System.out.println(count);
     }
 
-    public void printWithAirline(PrintStream out, String airline) {
+    public void printWithAirline(PrintStream out) {
         int count = 0;
         for (Map.Entry<String, AirportGraph.EdgeNode> entry : graph.getVertices().entrySet()) {
             String key = entry.getKey();
-            
-            if (entry.getValue().airline.equals(airline)) {
-                
-                String keyPath = showPathTo(entry.getKey());
-                if (!key.equals(keyPath)) {
-                    out.println("" + key + ": " + keyPath);
-                }
-                
+            String keyPath = showPathToWithSameAirline(key, entry.getValue().airline);
+            if (!key.equals(keyPath.substring(0, 3))) {
+                out.println("" + key + ": " + keyPath);
             }
             count++;
-            
         }
         System.out.println(count);
     }
+    
 
 //  public static void main(String[] args) {
 //    Graph g = new MatrixGraph(6);

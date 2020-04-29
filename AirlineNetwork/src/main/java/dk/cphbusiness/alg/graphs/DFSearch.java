@@ -12,11 +12,13 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import javafx.util.Pair;
 
 public class DFSearch {
 
     private final AirportGraph graph;
     private Map<String, String> visitedFrom;
+    private Map<String, Pair<String, String>> visitedFromWithAirline;
     private Stack<Edge> edges;
 
     public DFSearch(AirportGraph graph) {
@@ -28,21 +30,15 @@ public class DFSearch {
         }
         edges = new ArrayStack<>(2_000);
     }
-
-    private class Edge {
-
-        String from;
-        String to;
-
-        Edge(String from, String to) {
-            this.from = from;
-            this.to = to;
+    
+    public DFSearch(AirportGraph graph, String jeff) {
+        ArrayList<String> keys = new ArrayList<>(graph.getVertices().keySet());
+        this.graph = graph;
+        visitedFromWithAirline = new HashMap<>();
+        for (int v = 0; v < keys.size(); v++) {
+            visitedFromWithAirline.put(keys.get(v), new Pair("", ""));
         }
-
-        @Override
-        public String toString() {
-            return "" + from + " -> " + to;
-        }
+        edges = new ArrayStack<>(5_000);
     }
 
     private void register(Edge edge) {
@@ -52,6 +48,15 @@ public class DFSearch {
         // only register if 'to' has not been registered already
         edges.push(edge);
         visitedFrom.put(edge.to, edge.from);
+    }
+    
+    private void registerWithSameAirline(Edge edge) {
+        if (visitedFromWithAirline.get(edge.to) == null || !visitedFromWithAirline.get(edge.to).getKey().equals("")) {
+            return;
+        }
+        // only register if 'to' has not been registered already
+        edges.push(edge);
+        visitedFromWithAirline.put(edge.to, new Pair(edge.from, edge.airline));
     }
 
     public void searchFrom(String v) {
@@ -63,12 +68,36 @@ public class DFSearch {
             }
         }
     }
+    
+    public void searchFromSameAirline(String v) {
+        registerWithSameAirline(new Edge(v, v, ""));
+        while (!edges.isEmpty()) {
+            Edge step = edges.pop();
+            for (AirportGraph.EdgeNode node : graph.adjacentsWithEdgeNode(step.to)) {
+                registerWithSameAirline(new Edge(step.to, node.destination, node.airline));
+            }
+        }
+    }
 
     public String showPathTo(String w) {
         String path = w;
         while (!visitedFrom.get(w).equals(w) && !visitedFrom.get(w).equals("")) {
             w = visitedFrom.get(w);
             path = "" + w + " -> " + path;
+        }
+        return path;
+    }
+    
+    public String showPathToWithSameAirline(String w, String airline) {
+        String path = w + " ||| Airline company: " + airline;
+        while (visitedFromWithAirline.get(w) != null
+                && !visitedFromWithAirline.get(w).getKey().equals(w) 
+                && !visitedFromWithAirline.get(w).getKey().equals("")
+                && visitedFromWithAirline.get(w).getValue().equals(airline)) {
+            
+            String currAirline = visitedFromWithAirline.get(w).getValue();
+            w = visitedFromWithAirline.get(w).getKey();
+            path = "" + w + " (" + currAirline + ") -> " + path;
         }
         return path;
     }
@@ -86,18 +115,15 @@ public class DFSearch {
         System.out.println(count);
     }
 
-    public void printWithAirline(PrintStream out, String airline) {
+    public void printWithAirline(PrintStream out) {
         int count = 0;
         for (Map.Entry<String, AirportGraph.EdgeNode> entry : graph.getVertices().entrySet()) {
             String key = entry.getKey();
-            if (entry.getValue().airline.equals(airline)) {
-                String keyPath = showPathTo(entry.getKey());
-                if (!key.equals(keyPath)) {
-                    out.println("" + key + ": " + keyPath);
-                    count++;
-                }
-
+            String keyPath = showPathToWithSameAirline(key, entry.getValue().airline);
+            if (!key.equals(keyPath.substring(0, 3))) {
+                out.println("" + key + ": " + keyPath);
             }
+            count++;
         }
         System.out.println(count);
     }

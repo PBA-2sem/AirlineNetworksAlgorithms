@@ -30,17 +30,24 @@ public class AirportGraph {
     class EdgeNode {
 
         String destination;
+        String source;
         String airline;
         Float distance;
         Float time;
         EdgeNode next;
 
-        EdgeNode(String destination, String airline, Float distance, Float time, EdgeNode next) {
+        EdgeNode(String destination, String source, String airline, Float distance, Float time, EdgeNode next) {
             this.destination = destination;
+            this.source = source;
             this.airline = airline;
             this.distance = distance;
             this.time = time;
             this.next = next;
+        }
+
+        @Override
+        public String toString() {
+            return this.destination + "; " + this.airline + "; " + this.next;
         }
     }
 
@@ -57,7 +64,7 @@ public class AirportGraph {
     }
 
     public void addEdge(String airline, String source, String destination, Float distance, Float time) {
-        EdgeNode node = new EdgeNode(destination, airline, distance, time, vertices.get(source));
+        EdgeNode node = new EdgeNode(destination, source, airline, distance, time, vertices.get(source));
         vertices.put(source, node);
         E++;
     }
@@ -65,7 +72,7 @@ public class AirportGraph {
     public void addEdgeWithSameAirline(String airline, String source, String destination, Float distance, Float time) {
         EdgeNode node = null;
         if (vertices.get(source) == null) {
-            node = new EdgeNode(destination, airline, distance, time, vertices.get(source));
+            node = new EdgeNode(destination, source, airline, distance, time, vertices.get(source));
         } else {
 
             if (vertices.get(source).airline == airline) {
@@ -75,7 +82,6 @@ public class AirportGraph {
                 return;
             }
         }
-
         vertices.put(source, node);
         E++;
     }
@@ -85,6 +91,16 @@ public class AirportGraph {
         EdgeNode node = vertices.get(source);
         while (node != null) {
             adjacents.add(node.destination);
+            node = node.next;
+        }
+        return adjacents;
+    }
+    
+    public Iterable<EdgeNode> adjacentsWithEdgeNode(String source) {
+        List<EdgeNode> adjacents = new ArrayList<>();
+        EdgeNode node = vertices.get(source);
+        while (node != null) {
+            adjacents.add(node);
             node = node.next;
         }
         return adjacents;
@@ -125,9 +141,9 @@ public class AirportGraph {
                 Float time = Float.parseFloat(arr[4]);
 
                 // EDGE WITH RANDOM CONNECTIONS
-//                g.addEdge(airline, source, destination, distance, time);
+                g.addEdge(airline, source, destination, distance, time);
                 // EDGE WITH SAME AIRLINE
-                g.addEdgeWithSameAirline(airline, source, destination, distance, time);
+//                g.addEdgeWithSameAirline(airline, source, destination, distance, time);
 
                 sourceAirportCodes.add(source);
                 line = reader.readLine();
@@ -138,11 +154,16 @@ public class AirportGraph {
         }
 
         // https://www3.cs.stonybrook.edu/~skiena/combinatorica/animations/search.html
-        // Breadth First ####
+//         Breadth First ####
 //        BFSearch bfsearch = new BFSearch(g);
 ////        Run for all 
 //        bfsearch.searchFrom("BAY");
 //        bfsearch.print(System.out);
+        
+//        BFSearch bfsearch = new BFSearch(g, "jeff");
+////        Run for all 
+//        bfsearch.searchFromSameAirline("BAY");
+//        bfsearch.printWithAirline(System.out);
 //
 ////        RUN FOR ONLY SAME AIRLINE
 ////        for (String s : sourceAirportCodes) {
@@ -150,17 +171,17 @@ public class AirportGraph {
 ////            bfsearch.searchFrom(s);
 ////            bfsearch.print(System.out);
 ////        }
-////      Depth First ####
-//        DFSearch dfsearch = new DFSearch(g);
-//        //Run for all 
-//        dfsearch.searchFrom("BAY");
-//        dfsearch.print(System.out);
+//      Depth First ####
+        DFSearch dfsearch = new DFSearch(g, "jeff");
+        //Run for all 
+        dfsearch.searchFromSameAirline("BAY");
+        dfsearch.printWithAirline(System.out);
         
         // RUN FOR ONLY SAME AIRLINE
-        for (String s : sourceAirportCodes) {
-            DFSearch dfsearch = new DFSearch(g);
-            dfsearch.searchFrom(s);
-            dfsearch.print(System.out);
-        }
+//        for (String s : sourceAirportCodes) {
+//            DFSearch dfsearch = new DFSearch(g);
+//            dfsearch.searchFrom(s);
+//            dfsearch.print(System.out);
+//        }
     }
 }
