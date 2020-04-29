@@ -6,13 +6,13 @@ import dk.cphbusiness.alg.basics.Stack;
 import java.io.PrintStream;
 
 public class DepthFirstSearch {
-  private final Graph graph;
+  private final Graph<Integer> graph;
   private int[] visitedFrom;
   private Stack<Edge> edges;
 
   public DepthFirstSearch(Graph graph) {
     this.graph = graph;
-    visitedFrom = new int[graph.getV()];
+    visitedFrom = new int[(Integer)graph.getV()];
     for (int v = 0; v < visitedFrom.length; v++) visitedFrom[v] = -1;
     edges = new ArrayStack<>(1_000);
     }

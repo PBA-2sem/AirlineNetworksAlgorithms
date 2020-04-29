@@ -5,6 +5,8 @@
  */
 package dk.cphbusiness.alg.graphs;
 
+import dk.cphbusiness.alg.basics.ArrayQueue;
+import dk.cphbusiness.alg.basics.Queue;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -15,11 +17,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class AirportGraph {
+public class AirportGraph implements Graph<String> {
 
     private int V;
     private int E = 0;
-//    private final EdgeNode[] vertices;
     private Map<String, EdgeNode> vertices;
 
     public AirportGraph() {
@@ -30,15 +31,13 @@ public class AirportGraph {
     class EdgeNode {
 
         String destination;
-        String source;
         String airline;
         Float distance;
         Float time;
         EdgeNode next;
 
-        EdgeNode(String destination, String source, String airline, Float distance, Float time, EdgeNode next) {
+        EdgeNode(String destination, String airline, Float distance, Float time, EdgeNode next) {
             this.destination = destination;
-            this.source = source;
             this.airline = airline;
             this.distance = distance;
             this.time = time;
@@ -47,7 +46,7 @@ public class AirportGraph {
 
         @Override
         public String toString() {
-            return this.destination + "; " + this.airline + "; " + this.next;
+            return this.destination + "; " + this.airline + "; " + this.distance + "; " + this.time + ";";
         }
     }
 
@@ -64,26 +63,19 @@ public class AirportGraph {
     }
 
     public void addEdge(String airline, String source, String destination, Float distance, Float time) {
-        EdgeNode node = new EdgeNode(destination, source, airline, distance, time, vertices.get(source));
+        EdgeNode node = new EdgeNode(destination, airline, distance, time, vertices.get(source));
         vertices.put(source, node);
         E++;
     }
 
-    public void addEdgeWithSameAirline(String airline, String source, String destination, Float distance, Float time) {
-        EdgeNode node = null;
-        if (vertices.get(source) == null) {
-            node = new EdgeNode(destination, source, airline, distance, time, vertices.get(source));
-        } else {
+    @Override
+    public void addEdge(String v, String w) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 
-            if (vertices.get(source).airline == airline) {
-                node = vertices.get(source);
-            } else {
-//                System.out.println("Not same airline : " + airline);
-                return;
-            }
-        }
-        vertices.put(source, node);
-        E++;
+    @Override
+    public void addUndirectedEdge(String v, String w) {
+        Graph.super.addUndirectedEdge(v, w); //To change body of generated methods, choose Tools | Templates.
     }
 
     public Iterable<String> adjacents(String source) {
@@ -95,31 +87,66 @@ public class AirportGraph {
         }
         return adjacents;
     }
-    
-    public Iterable<EdgeNode> adjacentsWithEdgeNode(String source) {
-        List<EdgeNode> adjacents = new ArrayList<>();
-        EdgeNode node = vertices.get(source);
-        while (node != null) {
-            adjacents.add(node);
-            node = node.next;
+
+    public boolean BFSReachWithSameAirline(String source, String destination) {
+        if (source.equals(destination)) {
+            return true;
         }
-        return adjacents;
+        return this.BFSReachWithSameAirline(source, vertices.get(source), destination);
+    }
+
+    private boolean BFSReachWithSameAirline(String sourceDest, EdgeNode source, String destination) {
+        Queue<EdgeNode> toVisit = new ArrayQueue<>(50_000);
+        HashSet<String> visited = new HashSet<String>();
+//        HashMap<String, String> visitedFrom = new HashMap<>();
+
+        Set<String> airlines = new HashSet<>();
+        airlines.add(source.airline);
+        EdgeNode airlineNode = source.next;
+
+        while (airlineNode != null) {
+            airlines.add(airlineNode.airline);
+            airlineNode = airlineNode.next;
+        }
+
+        toVisit.enqueue(source);
+        while (!toVisit.isEmpty()) {
+            EdgeNode node = toVisit.dequeue();
+
+            // End of EdgeNode "LinkedList" is a null therefore continue to next if the queued item is null
+            if (node == null) {
+                continue;
+            }
+            // If the node is the destination, it means we could get to this node via routes.
+            if (node.destination.equals(destination)) {
+                System.out.println(sourceDest + " CAN REACH " + node.destination);
+                return true;
+            }
+            // if this node is part of the visited, go on to next in queue
+            if (visited.contains(node.destination)) {
+                continue;
+            }
+
+            // now visited and added to list of visited.
+            visited.add(node.destination);
+//            visitedFrom.put(destination)
+
+            // Add all Vertices that are connected via this edge.
+            for (String n : this.adjacents(node.destination)) {
+                toVisit.enqueue(vertices.get(n));
+            }
+        }
+
+        return false;
     }
 
     @Override
     public String toString() {
         String text = "";
         for (Map.Entry<String, EdgeNode> entry : vertices.entrySet()) {
-            if (text.length() == 0) {
-                text += "Airline : " + entry.getValue().airline + " - ";
-            }
             text += "" + entry.getKey() + ": " + adjacents(entry.getKey()) + "\n";
         }
         return text;
-    }
-    
-    public EdgeNode createEmptyEdgeNode() {
-        return new EdgeNode("", "", "", -1F, -1F, null);
     }
 
     public static void main(String[] args) {
@@ -135,7 +162,9 @@ public class AirportGraph {
 
             String line = reader.readLine();
             int count = 0;
+//            while (line != null && count < 30) {
             while (line != null) {
+                count++;
                 String[] arr = line.split(";");
 
                 String airline = arr[0];
@@ -146,8 +175,6 @@ public class AirportGraph {
 
                 // EDGE WITH RANDOM CONNECTIONS
                 g.addEdge(airline, source, destination, distance, time);
-                // EDGE WITH SAME AIRLINE
-//                g.addEdgeWithSameAirline(airline, source, destination, distance, time);
 
                 sourceAirportCodes.add(source);
                 line = reader.readLine();
@@ -157,36 +184,7 @@ public class AirportGraph {
             e.printStackTrace();
         }
 
-        // https://www3.cs.stonybrook.edu/~skiena/combinatorica/animations/search.html
-//         Breadth First ####
-//        BFSearch bfsearch = new BFSearch(g);
-////        Run for all 
-//        bfsearch.searchFrom("BAY");
-//        bfsearch.print(System.out);
-        
-        BFSearch bfsearch = new BFSearch(g, "jeff");
-//      Run for all 
-        bfsearch.searchFromSameAirline("SYD");
-        bfsearch.printWithAirline(System.out);
-//
-//        RUN FOR ONLY SAME AIRLINE
-//        for (String s : sourceAirportCodes) {
-//            BFSearch bfsearch = new BFSearch(g);
-//            bfsearch.searchFrom(s);
-//            bfsearch.print(System.out);
-//        }
-
-//      Depth First ####
-//        DFSearch dfsearch = new DFSearch(g, "jeff");
-//        //Run for all 
-//        dfsearch.searchFromSameAirline("BAY");
-//        dfsearch.printWithAirline(System.out);
-        
-        // RUN FOR ONLY SAME AIRLINE
-//        for (String s : sourceAirportCodes) {
-//            DFSearch dfsearch = new DFSearch(g);
-//            dfsearch.searchFrom(s);
-//            dfsearch.print(System.out);
-//        }
+        System.out.println(g.toString());
+        System.out.println(g.BFSReachWithSameAirline("CPH", "GEV"));
     }
 }
