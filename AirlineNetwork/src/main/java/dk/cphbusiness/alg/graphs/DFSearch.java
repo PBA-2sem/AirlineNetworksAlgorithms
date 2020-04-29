@@ -18,7 +18,7 @@ public class DFSearch {
 
     private final AirportGraph graph;
     private Map<String, String> visitedFrom;
-    private Map<String, Pair<String, String>> visitedFromWithAirline;
+    private Map<String, Edge> visitedFromWithAirline;
     private Stack<Edge> edges;
 
     public DFSearch(AirportGraph graph) {
@@ -36,7 +36,7 @@ public class DFSearch {
         this.graph = graph;
         visitedFromWithAirline = new HashMap<>();
         for (int v = 0; v < keys.size(); v++) {
-            visitedFromWithAirline.put(keys.get(v), new Pair("", ""));
+            visitedFromWithAirline.put(keys.get(v), new Edge("", "", "", 0F, 0F));
         }
         edges = new ArrayStack<>(5_000);
     }
@@ -51,12 +51,12 @@ public class DFSearch {
     }
     
     private void registerWithSameAirline(Edge edge) {
-        if (visitedFromWithAirline.get(edge.to) == null || !visitedFromWithAirline.get(edge.to).getKey().equals("")) {
+        if (visitedFromWithAirline.get(edge.to) == null || !visitedFromWithAirline.get(edge.to).to.equals("")) {
             return;
         }
         // only register if 'to' has not been registered already
         edges.push(edge);
-        visitedFromWithAirline.put(edge.to, new Pair(edge.from, edge.airline));
+        visitedFromWithAirline.put(edge.to, edge);
     }
 
     public void searchFrom(String v) {
@@ -70,11 +70,11 @@ public class DFSearch {
     }
     
     public void searchFromSameAirline(String v) {
-        registerWithSameAirline(new Edge(v, v, ""));
+        registerWithSameAirline(new Edge(v, v, "", 0F, 0F));
         while (!edges.isEmpty()) {
             Edge step = edges.pop();
             for (AirportGraph.EdgeNode node : graph.adjacentsWithEdgeNode(step.to)) {
-                registerWithSameAirline(new Edge(step.to, node.destination, node.airline));
+                registerWithSameAirline(new Edge(step.to, node.destination, node.airline, node.distance, node.time));
             }
         }
     }
@@ -91,12 +91,12 @@ public class DFSearch {
     public String showPathToWithSameAirline(String w, String airline) {
         String path = w + " ||| Airline company: " + airline;
         while (visitedFromWithAirline.get(w) != null
-                && !visitedFromWithAirline.get(w).getKey().equals(w) 
-                && !visitedFromWithAirline.get(w).getKey().equals("")
-                && visitedFromWithAirline.get(w).getValue().equals(airline)) {
+                && !visitedFromWithAirline.get(w).to.equals(w) 
+                && !visitedFromWithAirline.get(w).to.equals("")
+                && visitedFromWithAirline.get(w).airline.equals(airline)) {
             
-            String currAirline = visitedFromWithAirline.get(w).getValue();
-            w = visitedFromWithAirline.get(w).getKey();
+            String currAirline = visitedFromWithAirline.get(w).airline;
+            w = visitedFromWithAirline.get(w).to;
             path = "" + w + " (" + currAirline + ") -> " + path;
         }
         return path;

@@ -117,6 +117,10 @@ public class AirportGraph {
         }
         return text;
     }
+    
+    public EdgeNode createEmptyEdgeNode() {
+        return new EdgeNode("", "", "", -1F, -1F, null);
+    }
 
     public static void main(String[] args) {
 
@@ -160,22 +164,23 @@ public class AirportGraph {
 //        bfsearch.searchFrom("BAY");
 //        bfsearch.print(System.out);
         
-//        BFSearch bfsearch = new BFSearch(g, "jeff");
-////        Run for all 
-//        bfsearch.searchFromSameAirline("BAY");
-//        bfsearch.printWithAirline(System.out);
+        BFSearch bfsearch = new BFSearch(g, "jeff");
+//      Run for all 
+        bfsearch.searchFromSameAirline("SYD");
+        bfsearch.printWithAirline(System.out);
 //
-////        RUN FOR ONLY SAME AIRLINE
-////        for (String s : sourceAirportCodes) {
-////            BFSearch bfsearch = new BFSearch(g);
-////            bfsearch.searchFrom(s);
-////            bfsearch.print(System.out);
-////        }
+//        RUN FOR ONLY SAME AIRLINE
+//        for (String s : sourceAirportCodes) {
+//            BFSearch bfsearch = new BFSearch(g);
+//            bfsearch.searchFrom(s);
+//            bfsearch.print(System.out);
+//        }
+
 //      Depth First ####
-        DFSearch dfsearch = new DFSearch(g, "jeff");
-        //Run for all 
-        dfsearch.searchFromSameAirline("BAY");
-        dfsearch.printWithAirline(System.out);
+//        DFSearch dfsearch = new DFSearch(g, "jeff");
+//        //Run for all 
+//        dfsearch.searchFromSameAirline("BAY");
+//        dfsearch.printWithAirline(System.out);
         
         // RUN FOR ONLY SAME AIRLINE
 //        for (String s : sourceAirportCodes) {

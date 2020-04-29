@@ -122,8 +122,9 @@ public class BFSearch {
             String keyPath = showPathToWithSameAirline(key, entry.getValue().airline);
             if (!key.equals(keyPath.substring(0, 3))) {
                 out.println("" + key + ": " + keyPath);
+                count++;
             }
-            count++;
+            
         }
         System.out.println(count);
     }

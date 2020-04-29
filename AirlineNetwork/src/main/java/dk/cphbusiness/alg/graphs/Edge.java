@@ -5,6 +5,16 @@ class Edge {
     String from;
     String to;
     String airline = "";
+    Float distance;
+    Float time;
+    
+     Edge(String from, String to, String airline, Float distance, Float time) {
+        this.from = from;
+        this.to = to;
+        this.airline = airline;
+        this.distance = distance;
+        this.time = time;
+    }
 
     Edge(String from, String to, String airline) {
         this.from = from;
