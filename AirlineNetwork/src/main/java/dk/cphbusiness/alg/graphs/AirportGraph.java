@@ -88,7 +88,6 @@ public class AirportGraph implements Graph<EdgeNode> {
                 Float time = Float.parseFloat(arr[4]);
 
                 // EDGE WITH RANDOM CONNECTIONS
-//                g.addEdge(airline, source, destination, distance, time);
                 g.addEdge(new EdgeNode("", source, "", 0F, 0F, null), new EdgeNode(destination, source, airline, distance, time, null));
 
                 sourceAirportCodes.add(source);
