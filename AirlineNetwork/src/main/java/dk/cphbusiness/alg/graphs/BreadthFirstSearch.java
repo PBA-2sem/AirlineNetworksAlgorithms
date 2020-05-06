@@ -75,8 +75,9 @@ public class BreadthFirstSearch {
     g.addUndirectedEdge(6, 3);
 
     DepthFirstSearch bfs = new DepthFirstSearch(g);
-    bfs.searchFrom(2);
-    bfs.print(System.out);
+    bfs.searchFrom(0);
+      System.out.println(bfs.showPathTo(4));
+//    bfs.print(System.out);
     }
 
   }

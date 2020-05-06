@@ -30,7 +30,7 @@ public class BFSearch {
         }
         edges = new ArrayQueue<>(5_000);
     }
-    
+
     public BFSearch(AirportGraph graph, String jeff) {
         ArrayList<String> keys = new ArrayList<>(graph.getVertices().keySet());
         this.graph = graph;
@@ -49,7 +49,7 @@ public class BFSearch {
         edges.enqueue(edge);
         visitedFrom.put(edge.to, edge.from);
     }
-    
+
     private void registerWithSameAirline(Edge edge) {
         if (visitedFromWithAirline.get(edge.to) != null) {
             return;
@@ -68,31 +68,43 @@ public class BFSearch {
             }
         }
     }
-    
+
     public void searchFromSameAirline(String v) {
         registerWithSameAirline(new Edge(v, v, ""));
         while (!edges.isEmpty()) {
             Edge step = edges.dequeue();
             for (AirportGraph.EdgeNode node : graph.adjacentsWithEdgeNode(step.to)) {
-                    registerWithSameAirline(new Edge(step.to, node.destination, node.airline));
+                registerWithSameAirline(new Edge(step.to, node.destination, node.airline));
             }
         }
     }
 
     public String showPathToWithSameAirline(String w, String airline) {
         String path = w + " ||| Airline company: " + airline;
+        // Sneaki boi
+        int pathLen = path.length();
+        
         while (visitedFromWithAirline.get(w) != null
-                && !visitedFromWithAirline.get(w).getKey().equals(w) 
-                && !visitedFromWithAirline.get(w).getKey().equals("")
-                && visitedFromWithAirline.get(w).getValue().equals(airline)) {
+                && !visitedFromWithAirline.get(w).getKey().equals(w)
+                && !visitedFromWithAirline.get(w).getKey().equals("")) {
             
-            String currAirline = visitedFromWithAirline.get(w).getValue();
-            w = visitedFromWithAirline.get(w).getKey();
-            path = "" + w + " (" + currAirline + ") -> " + path;
+            if (visitedFromWithAirline.get(w).getValue().equals(airline)) {
+                String currAirline = visitedFromWithAirline.get(w).getValue();
+                w = visitedFromWithAirline.get(w).getKey();
+                path = "" + w + " (" + currAirline + ") -> " + path;
+                
+            } else {
+                w = visitedFromWithAirline.get(w).getKey();
+            }
+
+        }
+        // Sneaki boi
+        if(pathLen == path.length()) {
+            return "Not possible";
         }
         return path;
     }
-    
+
     public String showPathTo(String w) {
         String path = w;
         while (!visitedFrom.get(w).equals(w) && !visitedFrom.get(w).equals("")) {
@@ -124,11 +136,10 @@ public class BFSearch {
                 out.println("" + key + ": " + keyPath);
                 count++;
             }
-            
+
         }
         System.out.println(count);
     }
-    
 
 //  public static void main(String[] args) {
 //    Graph g = new MatrixGraph(6);

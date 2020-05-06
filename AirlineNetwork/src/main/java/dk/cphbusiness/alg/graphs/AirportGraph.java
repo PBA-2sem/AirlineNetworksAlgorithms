@@ -165,17 +165,14 @@ public class AirportGraph {
 //        bfsearch.print(System.out);
         
         BFSearch bfsearch = new BFSearch(g, "jeff");
+        
 //      Run for all 
-        bfsearch.searchFromSameAirline("SYD");
-        bfsearch.printWithAirline(System.out);
-//
-//        RUN FOR ONLY SAME AIRLINE
-//        for (String s : sourceAirportCodes) {
-//            BFSearch bfsearch = new BFSearch(g);
-//            bfsearch.searchFrom(s);
-//            bfsearch.print(System.out);
-//        }
+        bfsearch.searchFromSameAirline("YZV");
+//        bfsearch.printWithAirline(System.out);
 
+        // search with same airline
+        System.out.println(bfsearch.showPathToWithSameAirline("ZLT", "WJ"));
+//
 //      Depth First ####
 //        DFSearch dfsearch = new DFSearch(g, "jeff");
 //        //Run for all 
