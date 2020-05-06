@@ -6,7 +6,7 @@ public interface Graph<T> {
 
     int getE(); // get number of edges E
 
-    void addEdge(T v, T w); // add an edge from vertice v to vertice w
+    void addEdge(T sources, T destination); // add an edge from vertice source to vertice dest
 
     default void addUndirectedEdge(T v, T w) {
         addEdge(v, w);

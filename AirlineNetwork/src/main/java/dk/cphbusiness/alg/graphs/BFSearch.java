@@ -12,13 +12,11 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import javafx.util.Pair;
 
 public class BFSearch {
 
     private final AirportGraph graph;
-    private Map<String, String> visitedFrom;
-    private Map<String, Pair<String, String>> visitedFromWithAirline;
+    private Map<String, Edge> visitedFrom;
     private Queue<Edge> edges;
 
     public BFSearch(AirportGraph graph) {
@@ -26,55 +24,26 @@ public class BFSearch {
         this.graph = graph;
         visitedFrom = new HashMap<>();
         for (int v = 0; v < keys.size(); v++) {
-            visitedFrom.put(keys.get(v), "");
-        }
-        edges = new ArrayQueue<>(5_000);
-    }
-
-    public BFSearch(AirportGraph graph, String jeff) {
-        ArrayList<String> keys = new ArrayList<>(graph.getVertices().keySet());
-        this.graph = graph;
-        visitedFromWithAirline = new HashMap<>();
-        for (int v = 0; v < keys.size(); v++) {
-            visitedFromWithAirline.put(keys.get(v), null);
+            visitedFrom.put(keys.get(v), null);
         }
         edges = new ArrayQueue<>(5_000);
     }
 
     private void register(Edge edge) {
-        if (visitedFrom.get(edge.to) == null || !visitedFrom.get(edge.to).equals("")) {
+        if (visitedFrom.get(edge.to) != null) {
             return;
         }
         // only register if 'to' has not been registered already
         edges.enqueue(edge);
-        visitedFrom.put(edge.to, edge.from);
-    }
-
-    private void registerWithSameAirline(Edge edge) {
-        if (visitedFromWithAirline.get(edge.to) != null) {
-            return;
-        }
-        // only register if 'to' has not been registered already
-        edges.enqueue(edge);
-        visitedFromWithAirline.put(edge.to, new Pair(edge.from, edge.airline));
+        visitedFrom.put(edge.to, edge);
     }
 
     public void searchFrom(String v) {
-        register(new Edge(v, v));
+        register(new Edge(v, v, ""));
         while (!edges.isEmpty()) {
             Edge step = edges.dequeue();
-            for (String w : graph.adjacents(step.to)) {
-                register(new Edge(step.to, w));
-            }
-        }
-    }
-
-    public void searchFromSameAirline(String v) {
-        registerWithSameAirline(new Edge(v, v, ""));
-        while (!edges.isEmpty()) {
-            Edge step = edges.dequeue();
-            for (EdgeNode node : graph.adjacentsWithEdgeNode(step.to)) {
-                registerWithSameAirline(new Edge(step.to, node.destination, node.airline));
+            for (EdgeNode node : graph.adjacents(new EdgeNode("", step.to, "", Float.NaN, Float.NaN, null))) {
+                register(new Edge(step.to, node.destination, node.airline));
             }
         }
     }
@@ -83,23 +52,23 @@ public class BFSearch {
         String path = w + " ||| Airline company: " + airline;
         // Sneaki boi
         int pathLen = path.length();
-        
-        while (visitedFromWithAirline.get(w) != null
-                && !visitedFromWithAirline.get(w).getKey().equals(w)
-                && !visitedFromWithAirline.get(w).getKey().equals("")) {
-            
-            if (visitedFromWithAirline.get(w).getValue().equals(airline)) {
-                String currAirline = visitedFromWithAirline.get(w).getValue();
-                w = visitedFromWithAirline.get(w).getKey();
+
+        while (visitedFrom.get(w) != null
+                && !visitedFrom.get(w).from.equals(w)
+                && !visitedFrom.get(w).from.equals("")) {
+
+            if (visitedFrom.get(w).airline.equals(airline)) {
+                String currAirline = visitedFrom.get(w).airline;
+                w = visitedFrom.get(w).from;
                 path = "" + w + " (" + currAirline + ") -> " + path;
-                
+
             } else {
-                w = visitedFromWithAirline.get(w).getKey();
+                w = visitedFrom.get(w).from;
             }
 
         }
         // Sneaki boi
-        if(pathLen == path.length()) {
+        if (pathLen == path.length()) {
             return "Not possible";
         }
         return path;
@@ -107,10 +76,15 @@ public class BFSearch {
 
     public String showPathTo(String w) {
         String path = w;
-        while (!visitedFrom.get(w).equals(w) && !visitedFrom.get(w).equals("")) {
-            w = visitedFrom.get(w);
+
+        while (visitedFrom.get(w) != null
+                && !visitedFrom.get(w).from.equals(w)
+                && !visitedFrom.get(w).from.equals("")) {
+
+            w = visitedFrom.get(w).from;
             path = "" + w + " -> " + path;
         }
+
         return path;
     }
 
@@ -120,7 +94,7 @@ public class BFSearch {
             String key = entry.getKey();
             String keyPath = showPathTo(entry.getKey());
             if (!key.equals(keyPath)) {
-                out.println("Airline : " + entry.getValue().airline + " - " + key + ": " + keyPath);
+                out.println(keyPath);
                 count++;
             }
         }
