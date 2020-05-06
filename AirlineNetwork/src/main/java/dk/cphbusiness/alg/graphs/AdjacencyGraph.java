@@ -3,7 +3,7 @@ package dk.cphbusiness.alg.graphs;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AdjacencyGraph implements Graph {
+public class AdjacencyGraph implements Graph<Integer> {
 
     private final int V;
     private int E = 0;
@@ -36,14 +36,14 @@ public class AdjacencyGraph implements Graph {
     }
 
     @Override
-    public void addEdge(int v, int w) {
+    public void addEdge(Integer v, Integer w) {
         EdgeNode node = new EdgeNode(w, vertices[v]);
         vertices[v] = node;
         E++;
     }
 
     @Override
-    public Iterable<Integer> adjacents(int v) {
+    public Iterable<Integer> adjacents(Integer v) {
         List<Integer> adjacents = new ArrayList<>();
         EdgeNode node = vertices[v];
         while (node != null) {

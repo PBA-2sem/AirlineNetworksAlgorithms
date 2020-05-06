@@ -73,7 +73,7 @@ public class DFSearch {
         registerWithSameAirline(new Edge(v, v, "", 0F, 0F));
         while (!edges.isEmpty()) {
             Edge step = edges.pop();
-            for (AirportGraph.EdgeNode node : graph.adjacentsWithEdgeNode(step.to)) {
+            for (EdgeNode node : graph.adjacentsWithEdgeNode(step.to)) {
                 registerWithSameAirline(new Edge(step.to, node.destination, node.airline, node.distance, node.time));
             }
         }
@@ -100,11 +100,36 @@ public class DFSearch {
             path = "" + w + " (" + currAirline + ") -> " + path;
         }
         return path;
+        
+        
+//        String path = w + " ||| Airline company: " + airline;
+//        // Sneaki boi
+//        int pathLen = path.length();
+//
+//        while (visitedFromWithAirline.get(w) != null
+//                && !visitedFromWithAirline.get(w).to.equals(w)
+//                && !visitedFromWithAirline.get(w).to.equals("")) {
+//
+//            if (visitedFromWithAirline.get(w).to.equals(airline)) {
+//                String currAirline = visitedFromWithAirline.get(w).to;
+//                w = visitedFromWithAirline.get(w).to;
+//                path = "" + w + " (" + currAirline + ") -> " + path;
+//
+//            } else {
+//                w = visitedFromWithAirline.get(w).to;
+//            }
+//
+//        }
+//        // Sneaki boi
+//        if (pathLen == path.length()) {
+//            return "Not possible";
+//        }
+//        return path;
     }
 
     public void print(PrintStream out) {
         int count = 0;
-        for (Map.Entry<String, AirportGraph.EdgeNode> entry : graph.getVertices().entrySet()) {
+        for (Map.Entry<String, EdgeNode> entry : graph.getVertices().entrySet()) {
             String key = entry.getKey();
             String keyPath = showPathTo(entry.getKey());
             if (!key.equals(keyPath)) {
@@ -117,7 +142,7 @@ public class DFSearch {
 
     public void printWithAirline(PrintStream out) {
         int count = 0;
-        for (Map.Entry<String, AirportGraph.EdgeNode> entry : graph.getVertices().entrySet()) {
+        for (Map.Entry<String, EdgeNode> entry : graph.getVertices().entrySet()) {
             String key = entry.getKey();
             String keyPath = showPathToWithSameAirline(key, entry.getValue().airline);
             if (!key.equals(keyPath.substring(0, 3))) {
@@ -128,18 +153,4 @@ public class DFSearch {
         System.out.println(count);
     }
 
-//  public static void main(String[] args) {
-//    Graph g = new AdjacencyGraph(6);
-//    g.addUndirectedEdge(0, 5);
-//    g.addUndirectedEdge(0, 1);
-//    g.addUndirectedEdge(0, 2);
-//    g.addUndirectedEdge(2, 3);
-//    g.addUndirectedEdge(2, 4);
-//    g.addUndirectedEdge(3, 4);
-//    g.addUndirectedEdge(5, 3);
-//
-//    DepthFirstSearch dfs = new DepthFirstSearch(g);
-//    dfs.searchFrom(0);
-//    dfs.print(System.out);
-//    }
 }

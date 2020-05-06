@@ -1,17 +1,17 @@
 package dk.cphbusiness.alg.graphs;
 
-public interface Graph {
+public interface Graph<T> {
 
     int getV(); // get number of vertices V
 
     int getE(); // get number of edges E
 
-    void addEdge(int v, int w); // add an edge from vertice v to vertice w
+    void addEdge(T v, T w); // add an edge from vertice v to vertice w
 
-    default void addUndirectedEdge(int v, int w) {
+    default void addUndirectedEdge(T v, T w) {
         addEdge(v, w);
         addEdge(w, v);
     }
 
-    Iterable<Integer> adjacents(int v); // list all adjacent vertices to vertice v
+    Iterable<T> adjacents(T v); // list all adjacent vertices to vertice v
 }

@@ -3,7 +3,7 @@ package dk.cphbusiness.alg.graphs;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MatrixGraph implements Graph {
+public class MatrixGraph implements Graph<Integer> {
 
     private final int V;
     private int E = 0;
@@ -25,13 +25,13 @@ public class MatrixGraph implements Graph {
     }
 
     @Override
-    public void addEdge(int v, int w) {
+    public void addEdge(Integer v, Integer w) {
         edges[v][w] = true;
         E++;
     }
 
     @Override
-    public Iterable<Integer> adjacents(int v) {
+    public Iterable<Integer> adjacents(Integer v) {
         List<Integer> adjacents = new ArrayList<>();
         for (int w = 0; w < V; w++) {
             if (edges[v][w]) {

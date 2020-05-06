@@ -73,7 +73,7 @@ public class BFSearch {
         registerWithSameAirline(new Edge(v, v, ""));
         while (!edges.isEmpty()) {
             Edge step = edges.dequeue();
-            for (AirportGraph.EdgeNode node : graph.adjacentsWithEdgeNode(step.to)) {
+            for (EdgeNode node : graph.adjacentsWithEdgeNode(step.to)) {
                 registerWithSameAirline(new Edge(step.to, node.destination, node.airline));
             }
         }
@@ -116,7 +116,7 @@ public class BFSearch {
 
     public void print(PrintStream out) {
         int count = 0;
-        for (Map.Entry<String, AirportGraph.EdgeNode> entry : graph.getVertices().entrySet()) {
+        for (Map.Entry<String, EdgeNode> entry : graph.getVertices().entrySet()) {
             String key = entry.getKey();
             String keyPath = showPathTo(entry.getKey());
             if (!key.equals(keyPath)) {
@@ -129,7 +129,7 @@ public class BFSearch {
 
     public void printWithAirline(PrintStream out) {
         int count = 0;
-        for (Map.Entry<String, AirportGraph.EdgeNode> entry : graph.getVertices().entrySet()) {
+        for (Map.Entry<String, EdgeNode> entry : graph.getVertices().entrySet()) {
             String key = entry.getKey();
             String keyPath = showPathToWithSameAirline(key, entry.getValue().airline);
             if (!key.equals(keyPath.substring(0, 3))) {
@@ -141,18 +141,4 @@ public class BFSearch {
         System.out.println(count);
     }
 
-//  public static void main(String[] args) {
-//    Graph g = new MatrixGraph(6);
-//    g.addUndirectedEdge(0, 5);
-//    g.addUndirectedEdge(0, 1);
-//    g.addUndirectedEdge(0, 2);
-//    g.addUndirectedEdge(2, 3);
-//    g.addUndirectedEdge(2, 4);
-//    g.addUndirectedEdge(3, 4);
-//    g.addUndirectedEdge(5, 3);
-//
-//    DepthFirstSearch bfs = new DepthFirstSearch(g);
-//    bfs.searchFrom(0);
-//    bfs.print(System.out);
-//    }
 }

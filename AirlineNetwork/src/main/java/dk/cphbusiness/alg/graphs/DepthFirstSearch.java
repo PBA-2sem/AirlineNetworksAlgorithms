@@ -6,7 +6,7 @@ import dk.cphbusiness.alg.basics.Stack;
 import java.io.PrintStream;
 
 public class DepthFirstSearch {
-  private final Graph graph;
+  private final Graph<Integer> graph;
   private int[] visitedFrom;
   private Stack<Edge> edges;
 

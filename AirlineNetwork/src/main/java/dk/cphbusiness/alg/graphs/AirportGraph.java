@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class AirportGraph {
+public class AirportGraph implements Graph<EdgeNode>{
 
     private int V;
     private int E = 0;
@@ -25,30 +25,6 @@ public class AirportGraph {
     public AirportGraph() {
         this.V = V;
         vertices = new HashMap<>();
-    }
-
-    class EdgeNode {
-
-        String destination;
-        String source;
-        String airline;
-        Float distance;
-        Float time;
-        EdgeNode next;
-
-        EdgeNode(String destination, String source, String airline, Float distance, Float time, EdgeNode next) {
-            this.destination = destination;
-            this.source = source;
-            this.airline = airline;
-            this.distance = distance;
-            this.time = time;
-            this.next = next;
-        }
-
-        @Override
-        public String toString() {
-            return this.destination + "; " + this.airline + "; " + this.next;
-        }
     }
 
     public int getV() {
@@ -164,26 +140,34 @@ public class AirportGraph {
 //        bfsearch.searchFrom("BAY");
 //        bfsearch.print(System.out);
         
-        BFSearch bfsearch = new BFSearch(g, "jeff");
+//        BFSearch bfsearch = new BFSearch(g, "");
         
 //      Run for all 
-        bfsearch.searchFromSameAirline("YZV");
+//        bfsearch.searchFromSameAirline("YZV");
 //        bfsearch.printWithAirline(System.out);
 
         // search with same airline
-        System.out.println(bfsearch.showPathToWithSameAirline("ZLT", "WJ"));
+//        System.out.println(bfsearch.showPathToWithSameAirline("ZLT", "WJ"));
 //
 //      Depth First ####
-//        DFSearch dfsearch = new DFSearch(g, "jeff");
+        DFSearch dfsearch = new DFSearch(g, "jeff");
 //        //Run for all 
-//        dfsearch.searchFromSameAirline("BAY");
-//        dfsearch.printWithAirline(System.out);
+//
+        dfsearch.searchFromSameAirline("YZV");
+        dfsearch.printWithAirline(System.out);
         
-        // RUN FOR ONLY SAME AIRLINE
-//        for (String s : sourceAirportCodes) {
-//            DFSearch dfsearch = new DFSearch(g);
-//            dfsearch.searchFrom(s);
-//            dfsearch.print(System.out);
-//        }
+        
+//        System.out.println(dfsearch.showPathToWithSameAirline("ZLT", "WJ"));
+        
+    }
+
+    @Override
+    public void addEdge(EdgeNode v, EdgeNode w) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Iterable<EdgeNode> adjacents(EdgeNode v) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
