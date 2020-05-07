@@ -22,6 +22,9 @@ public class DijkstraSearch {
         edgeTo = new HashMap<>();
         distTo = new HashMap<>();
         for (String v : keys) {
+            if (v.equals("SPI")) {
+                System.out.println("jeff");
+            }
             edgeTo.put(source, "");
             distTo.put(v, Double.POSITIVE_INFINITY);
         }
@@ -66,23 +69,40 @@ public class DijkstraSearch {
         }
     }
 
+//  private void relax(Path path) {
+//    Iterable<WeightedGraph.Edge> adj = graph.adjacents(path.v);
+//    for (WeightedGraph.Edge edge : adj) {
+//      double newDistance = distTo[edge.from] + edge.weight;
+//      if (distTo[edge.to] > newDistance) {
+//        // update distTo and edgeTo...
+//        distTo[edge.to] = newDistance;
+//        edgeTo[edge.to] = edge.from;
+//        // update priority queue
+//        pqMin.add(new Path(edge.to, newDistance));
+//        }
+//      }
+//    }
+//  
     private void relax(Path path) {
         Iterable<EdgeNode> adj = graph.adjacents(new EdgeNode("", path.v, "", Float.NaN, Float.NaN, null));
         for (EdgeNode edge : adj) {
-            double newDistance = distTo.get(path.v) + edge.distance;
-            if (distTo.get(edge.destination) > newDistance) {
-                // update distTo and edgeTo...
-                distTo.put(edge.destination, newDistance);
-                edgeTo.put(edge.destination, edge.source);
-                // update priority queue
-                pqMin.add(new Path(edge.destination, newDistance));
+            double newDistance = distTo.get(edge.source) + edge.distance;
+            if (distTo.get(edge.destination) != null) {
+
+                if (distTo.get(edge.destination) > newDistance) {
+                    // update distTo and edgeTo...
+                    distTo.put(edge.destination, newDistance);
+                    edgeTo.put(edge.destination, edge.source);
+                    // update priority queue
+                    pqMin.add(new Path(edge.destination, newDistance));
+                }
             }
         }
     }
 
     public String showPathTo(String destination) {
         String path = "" + destination;
-        while (!edgeTo.get(destination).equals("") && !edgeTo.get(destination).equals(destination)) {
+        while (edgeTo.get(destination) != null && !edgeTo.get(destination).equals("") && !edgeTo.get(destination).equals(destination)) {
             destination = edgeTo.get(destination);
             path = "" + destination + " -> " + path;
         }
@@ -94,7 +114,6 @@ public class DijkstraSearch {
         for (String k : keys) {
             out.println("" + k + ": " + showPathTo(k));
         }
-        System.out.print(out);
     }
 
 //    public static void main(String[] args) {
