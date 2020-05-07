@@ -25,6 +25,11 @@ public class MST {
         for(int i = 0; i < vertices.length; i++) {
             vertices[i] = keys.get(i);
         }
+        
+        for (Map.Entry<String, EdgeNode> entry : graph.getVertices().entrySet()) {
+            EdgeNode node = entry.getValue();
+            addEgde(node.source, node.destination, node.distance);
+        }
     }
 
     public void addEgde(String source, String destination, Float weight) {
@@ -101,17 +106,4 @@ public class MST {
                     + " weight: " + edge.distance);
         }
     }
-
-//    public static void main(String[] args) {
-//        int vertices = 6;
-//        Graph graph = new Graph(vertices);
-//        graph.addEgde(0, 1, 4);
-//        graph.addEgde(0, 2, 3);
-//        graph.addEgde(1, 2, 1);
-//        graph.addEgde(1, 3, 2);
-//        graph.addEgde(2, 3, 4);
-//        graph.addEgde(3, 4, 2);
-//        graph.addEgde(4, 5, 6);
-//        graph.kruskalMST();
-//    }
 }
