@@ -100,12 +100,12 @@ public class AirportGraph implements Graph<EdgeNode> {
 
         // https://www3.cs.stonybrook.edu/~skiena/combinatorica/animations/search.html
 //         Breadth First ####
-        BFSearch bfsearch = new BFSearch(g);
-        bfsearch.searchFrom("YZV");
+//        BFSearch bfsearch = new BFSearch(g);
+//        bfsearch.searchFrom("YZV");
         //Print all
 //        bfsearch.print(System.out);
         // search with same airline
-        System.out.println(bfsearch.showPathToWithSameAirline("ZLT", "WJ"));
+//        System.out.println(bfsearch.showPathToWithSameAirline("ZLT", "WJ"));
 //
 //      Depth First ####
 //        DFSearch dfsearch = new DFSearch(g);
@@ -115,6 +115,10 @@ public class AirportGraph implements Graph<EdgeNode> {
 //        dfsearch.print(System.out);
 
 //        System.out.println(dfsearch.showPathToWithSameAirline("ZLT", "WJ"));
+
+
+        DijkstraSearch dsearch = new DijkstraSearch(g, "YZV");
+        dsearch.print(System.out);
     }
 
 }

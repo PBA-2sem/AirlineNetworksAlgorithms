@@ -33,10 +33,10 @@ public class DijkstraSearch {
 
     private class Path implements Comparable<Path> {
 
-        int v;
+        String v;
         double weight;
 
-        Path(int v, double weight) {
+        Path(String v, double weight) {
             this.v = v;
             this.weight = weight;
         }
@@ -67,32 +67,34 @@ public class DijkstraSearch {
     }
 
     private void relax(Path path) {
-        Iterable<EdgeNode> adj = graph.adjacents(path.v);
+        Iterable<EdgeNode> adj = graph.adjacents(new EdgeNode("", path.v, "", Float.NaN, Float.NaN, null));
         for (EdgeNode edge : adj) {
-            double newDistance = distTo[edge.from] + edge.weight;
-            if (distTo[edge.to] > newDistance) {
+            double newDistance = distTo.get(path.v) + edge.distance;
+            if (distTo.get(edge.destination) > newDistance) {
                 // update distTo and edgeTo...
-                distTo[edge.to] = newDistance;
-                edgeTo[edge.to] = edge.from;
+                distTo.put(edge.destination, newDistance);
+                edgeTo.put(edge.destination, edge.source);
                 // update priority queue
-                pqMin.add(new Path(edge.to, newDistance));
+                pqMin.add(new Path(edge.destination, newDistance));
             }
         }
     }
 
-    public String showPathTo(int w) {
-        String path = "" + w;
-        while (edgeTo[w] != w && edgeTo[w] != -1) {
-            w = edgeTo[w];
-            path = "" + w + " -> " + path;
+    public String showPathTo(String destination) {
+        String path = "" + destination;
+        while (!edgeTo.get(destination).equals("") && !edgeTo.get(destination).equals(destination)) {
+            destination = edgeTo.get(destination);
+            path = "" + destination + " -> " + path;
         }
         return path;
     }
 
     public void print(PrintStream out) {
-        for (int v = 0; v < graph.getV(); v++) {
-            out.println("" + v + ": " + showPathTo(v));
+        ArrayList<String> keys = new ArrayList<>(graph.getVertices().keySet());
+        for (String k : keys) {
+            out.println("" + k + ": " + showPathTo(k));
         }
+        System.out.print(out);
     }
 
 //    public static void main(String[] args) {
