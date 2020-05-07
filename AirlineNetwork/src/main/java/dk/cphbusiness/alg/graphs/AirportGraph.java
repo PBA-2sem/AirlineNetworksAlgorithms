@@ -11,37 +11,37 @@ import java.util.Map;
 import java.util.Set;
 
 public class AirportGraph implements Graph<EdgeNode> {
-
+    
     private int V;
     private int E = 0;
     private Map<String, EdgeNode> vertices;
-
+    
     public AirportGraph() {
         this.V = V;
         vertices = new HashMap<>();
     }
-
+    
     @Override
     public int getV() {
         return vertices.size();
     }
-
+    
     @Override
     public int getE() {
         return E;
     }
-
+    
     public Map<String, EdgeNode> getVertices() {
         return vertices;
     }
-
+    
     @Override
     public void addEdge(EdgeNode source, EdgeNode destination) {
         EdgeNode node = new EdgeNode(destination.destination, source.source, destination.airline, destination.distance, destination.time, vertices.get(source.source));
         vertices.put(source.source, node);
         E++;
     }
-
+    
     @Override
     public Iterable<EdgeNode> adjacents(EdgeNode v) {
         List<EdgeNode> adjacents = new ArrayList<>();
@@ -52,7 +52,7 @@ public class AirportGraph implements Graph<EdgeNode> {
         }
         return adjacents;
     }
-
+    
     @Override
     public String toString() {
         String text = "";
@@ -64,23 +64,23 @@ public class AirportGraph implements Graph<EdgeNode> {
         }
         return text;
     }
-
+    
     public static void main(String[] args) {
-
+        
         AirportGraph g = new AirportGraph();
-
+        
         Set<String> sourceAirportCodes = new HashSet<>();
         BufferedReader reader;
         try {
             reader = new BufferedReader(new FileReader(
                     "./src/main/resources/routes.txt"));
             String headers = reader.readLine();
-
+            
             String line = reader.readLine();
             int count = 0;
             while (line != null) {
                 String[] arr = line.split(";");
-
+                
                 String airline = arr[0];
                 String source = arr[1];
                 String destination = arr[2];
@@ -89,7 +89,7 @@ public class AirportGraph implements Graph<EdgeNode> {
 
                 // EDGE WITH RANDOM CONNECTIONS
                 g.addEdge(new EdgeNode("", source, "", 0F, 0F, null), new EdgeNode(destination, source, airline, distance, time, null));
-
+                
                 sourceAirportCodes.add(source);
                 line = reader.readLine();
             }
@@ -108,17 +108,21 @@ public class AirportGraph implements Graph<EdgeNode> {
 //        System.out.println(bfsearch.showPathToWithSameAirline("ZLT", "WJ"));
 //
 //      Depth First ####
-//        DFSearch dfsearch = new DFSearch(g);
+        DFSearch dfsearch = new DFSearch(g);
 //
-//        dfsearch.searchFrom("YZV");
+        dfsearch.searchFrom("YZV");
 //        //Print all
 //        dfsearch.print(System.out);
 
-//        System.out.println(dfsearch.showPathToWithSameAirline("ZLT", "WJ"));
-
-
-        DijkstraSearch dsearch = new DijkstraSearch(g, "YZV");
-        dsearch.print(System.out);
+        System.out.println(dfsearch.showPathToWithSameAirline("ZLT", "WJ"));
+        
+        DijkstraSearch distanceSearch = new DijkstraSearch(g, "YZV", "distance");
+//        distanceSearch.print(System.out);
+        System.out.println(distanceSearch.showPathTo("CPH"));
+        
+        DijkstraSearch timeSearch = new DijkstraSearch(g, "YZV", "time");
+        System.err.println(timeSearch.showPathTo("CPH"));
+        
     }
-
+    
 }

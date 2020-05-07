@@ -15,23 +15,20 @@ public class DijkstraSearch {
     private Map<String, Double> distTo;
     private PriorityQueue<Path> pqMin = new PriorityQueue<>();
 
-    public DijkstraSearch(AirportGraph graph, String source) {
+    public DijkstraSearch(AirportGraph graph, String source, String weightType) {
         this.graph = graph;
         this.source = source;
         ArrayList<String> keys = new ArrayList<>(graph.getVertices().keySet());
         edgeTo = new HashMap<>();
         distTo = new HashMap<>();
         for (String v : keys) {
-            if (v.equals("SPI")) {
-                System.out.println("jeff");
-            }
             edgeTo.put(source, "");
             distTo.put(v, Double.POSITIVE_INFINITY);
         }
         edgeTo.put(source, source);
         distTo.put(source, 0.0);
         pqMin.add(new Path(source, 0.0));
-        build();
+        build(weightType);
     }
 
     private class Path implements Comparable<Path> {
@@ -62,39 +59,30 @@ public class DijkstraSearch {
 
     }
 
-    private void build() {
+    private void build(String weightType) {
         while (!pqMin.isEmpty()) {
             Path path = pqMin.poll();
-            relax(path);
+            relax(path, weightType);
         }
     }
 
-//  private void relax(Path path) {
-//    Iterable<WeightedGraph.Edge> adj = graph.adjacents(path.v);
-//    for (WeightedGraph.Edge edge : adj) {
-//      double newDistance = distTo[edge.from] + edge.weight;
-//      if (distTo[edge.to] > newDistance) {
-//        // update distTo and edgeTo...
-//        distTo[edge.to] = newDistance;
-//        edgeTo[edge.to] = edge.from;
-//        // update priority queue
-//        pqMin.add(new Path(edge.to, newDistance));
-//        }
-//      }
-//    }
-//  
-    private void relax(Path path) {
+    private void relax(Path path, String type) {
         Iterable<EdgeNode> adj = graph.adjacents(new EdgeNode("", path.v, "", Float.NaN, Float.NaN, null));
         for (EdgeNode edge : adj) {
-            double newDistance = distTo.get(edge.source) + edge.distance;
+            double weightValue = 0.0;
+            if (type.equals("distance")) {
+                weightValue = distTo.get(edge.source) + edge.distance;
+            } else if (type.equals("time")) {
+                weightValue = distTo.get(edge.source) + edge.time + 1.0;
+            }
             if (distTo.get(edge.destination) != null) {
 
-                if (distTo.get(edge.destination) > newDistance) {
+                if (distTo.get(edge.destination) > weightValue) {
                     // update distTo and edgeTo...
-                    distTo.put(edge.destination, newDistance);
+                    distTo.put(edge.destination, weightValue);
                     edgeTo.put(edge.destination, edge.source);
                     // update priority queue
-                    pqMin.add(new Path(edge.destination, newDistance));
+                    pqMin.add(new Path(edge.destination, weightValue));
                 }
             }
         }
@@ -116,17 +104,4 @@ public class DijkstraSearch {
         }
     }
 
-//    public static void main(String[] args) {
-////        WeightedGraph g = new WeightedGraph(6);
-////        g.addUndirectedEdge(0, 2, 3.0);
-////        g.addUndirectedEdge(0, 1, 2.0);
-////        g.addUndirectedEdge(0, 5, 1.0);
-////        g.addUndirectedEdge(2, 4, 4.0);
-////        g.addUndirectedEdge(2, 3, 3.0);
-////        g.addUndirectedEdge(3, 4, 5.0);
-////        g.addUndirectedEdge(5, 3, 2.0);
-////
-////        DijsktraShortestPath dsp = new DijsktraShortestPath(g, 0);
-////        dsp.print(System.out);
-//    }
 }
