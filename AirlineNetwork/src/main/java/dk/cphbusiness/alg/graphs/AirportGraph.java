@@ -108,20 +108,29 @@ public class AirportGraph implements Graph<EdgeNode> {
 //        System.out.println(bfsearch.showPathToWithSameAirline("ZLT", "WJ"));
 //
 //      Depth First ####
-        DFSearch dfsearch = new DFSearch(g);
+//        DFSearch dfsearch = new DFSearch(g);
 //
-        dfsearch.searchFrom("YZV");
+//        dfsearch.searchFrom("YZV");
 //        //Print all
 //        dfsearch.print(System.out);
 
-        System.out.println(dfsearch.showPathToWithSameAirline("ZLT", "WJ"));
+//        System.out.println(dfsearch.showPathToWithSameAirline("ZLT", "WJ"));
         
-        DijkstraSearch distanceSearch = new DijkstraSearch(g, "YZV", "distance");
+//        DijkstraSearch distanceSearch = new DijkstraSearch(g, "YZV", "distance");
 //        distanceSearch.print(System.out);
-        System.out.println(distanceSearch.showPathTo("CPH"));
+//        System.out.println(distanceSearch.showPathTo("CPH"));
         
-        DijkstraSearch timeSearch = new DijkstraSearch(g, "YZV", "time");
-        System.err.println(timeSearch.showPathTo("CPH"));
+//        DijkstraSearch timeSearch = new DijkstraSearch(g, "YZV", "time");
+//        System.err.println(timeSearch.showPathTo("CPH"));
+            
+          // MINIMUM SPANNING TREE
+          MST mst = new MST(g);
+          
+          for (Map.Entry<String, EdgeNode> entry : g.getVertices().entrySet()) {
+              EdgeNode node = entry.getValue();
+              mst.addEgde(node.source, node.destination, node.distance);
+          }
+          mst.kruskalMST();
         
     }
     
